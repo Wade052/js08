@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JS08 Inventory Challenge</title>
+</head>
+<body>
+  <main>
+    <h1>Inventory Challenge</h1>
+
+    <h2>Required test results</h2>
+    <ul id="test-results"></ul>
+
+    <h2>Find items by category</h2>
+    <form id="category-form">
+      <label for="category">Category</label>
+      <input id="category" placeholder="hardware or software" required>
+      <button type="submit">Find items</button>
+    </form>
+    <p id="match-count" role="status"></p>
+    <ul id="matching-items"></ul>
+  </main>
+
+  <script src="js08.js"></script>
+  <script>
+    const testResults = document.querySelector("#test-results");
+    const categoryForm = document.querySelector("#category-form");
+    const categoryInput = document.querySelector("#category");
+    const matchCount = document.querySelector("#match-count");
+    const matchingItems = document.querySelector("#matching-items");
+
+    function appendListItem(list, text) {
+      const item = document.createElement("li");
+      item.textContent = text;
+      list.append(item);
+    }
+
+    const missingCategoryItems = getCategoryItems(inventory, "books");
+
+    const results = [
+      `Active item count: ${getActiveItems(inventory).length}`,
+      `All item names count: ${getItemNames(inventory).length}`,
+      `Active total value: ${getTotalValue(getActiveItems(inventory))}`,
+      `Hardware item count: ${getCategoryItems(inventory, "hardware").length}`,
+      `Software item count: ${getCategoryItems(inventory, "software").length}`,
+      `Missing category items: ${JSON.stringify(missingCategoryItems)}`,
+    ];
+
+    results.forEach((result) => appendListItem(testResults, result));
+
+    categoryForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const category = categoryInput.value.trim();
+      const matches = getCategoryItems(inventory, category);
+      matchingItems.replaceChildren();
+
+      matchCount.textContent = matches.length
+        ? `Items found: ${matches.length}`
+        : `No items found for "${category}".`;
+
+      matches.forEach((item) => {
+        const status = item.active ? "" : " (inactive)";
+        appendListItem(matchingItems, `${item.name} — $${item.price}${status}`);
+      });
+    });
+  </script>
+</body>
+</html>
